@@ -18,6 +18,6 @@ Windows 10 distribution included. However, this can be run with any computer whi
 
 ## Development
 
-pip install Gooey piexif pyinstaller
+pip install Gooey piexif pyinstaller pyproj
 
 pyinstaller --noconsole --onefile --windowed exifwrite.py
