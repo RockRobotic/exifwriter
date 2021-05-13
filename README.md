@@ -18,6 +18,8 @@ Windows 10 distribution included. However, this can be run with any computer whi
 
 ## Development
 
+conda create --name exifwriter python=3.8.3
+
 pip install Gooey piexif pyinstaller pyproj
 
 pyinstaller --noconsole --onefile --windowed exifwrite.py
