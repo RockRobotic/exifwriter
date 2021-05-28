@@ -6,7 +6,7 @@ Dowload zip file from the latest release https://github.com/RockRobotic/exifwrit
 
 Unzip and navigate to the 'dist' folder and run the exifwrite program.
 
-Select your trajectory file and the folder containing your camera images and click start. GPS data will be written to the photos in the folder you selected.
+Select the csv file created by PCPainter and the folder containing your camera images and click start. GPS data will be written to the photos in the folder you selected. If you do not have the csv file, then a less accurate method can be used by selecting the trajectory file intead. NOTE: the csv file processing is preferred.
 
 ## Compatibility
 
