@@ -157,7 +157,7 @@ def set_gps_location(file_name, lat, lng, altitude):
 
     if altitude <= 0:
         altitude = 1
-        
+
     gps_ifd = {
         piexif.GPSIFD.GPSVersionID: (2, 0, 0, 0),
         piexif.GPSIFD.GPSAltitudeRef: 0,
