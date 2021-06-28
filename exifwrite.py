@@ -8,6 +8,8 @@ from fractions import Fraction
 from gooey import Gooey
 from gooey import GooeyParser
 from pyproj import Transformer
+from datetime import datetime
+from gps_time.core import GPSTime
 
 @Gooey(progress_regex=r"^progress: (?P<current>\d+)/(?P<total>\d+)$",
        progress_expr="current / total * 100")
@@ -79,9 +81,11 @@ def main():
                 beforeDiff = float(before[1]) - imageStart
                 afterDiff = imageStart - float(after[1])
                 if beforeDiff < afterDiff:
-                    set_gps_location(photo, float(before[4]), float(before[3]), float(before[5]))
+                    photo_date = get_photo_date(before[0], before[1])
+                    set_gps_location(photo, float(before[4]), float(before[3]), float(before[5]), photo_date)
                 else:
-                    set_gps_location(photo, float(after[4]), float(after[3]), float(after[5]))
+                    photo_date = get_photo_date(after[0], after[1])
+                    set_gps_location(photo, float(after[4]), float(after[3]), float(after[5]), photo_date)
             photo_num = photo_num + 1
             print('progress: ' + str(photo_num) + '/' + str(total_photos))
 
@@ -99,11 +103,17 @@ def main():
                 if os.path.exists(args.base_camera_dir + os.sep + photoname):
                     photo = args.base_camera_dir + os.sep + photoname
                     reproject = reproject_point(line[3], line[4], 'epsg:' + line[2])
-
-                    set_gps_location(photo, float(reproject[1]), float(reproject[0]), float(line[5]))
+                    photo_date = get_photo_date(line[0], line[1])
+                    set_gps_location(photo, float(reproject[1]), float(reproject[0]), float(line[5]), photo_date)
 
             i = i + 1
             print('progress: ' + str(i) + '/' + str(total_lines))
+
+def get_photo_date(gpsweek, seconds):
+    float_val = float(seconds)
+    int_val = int(float_val)
+    gps_time = GPSTime(gpsweek, int_val)
+    return gps_time.to_datetime().strftime("%Y:%m:%d %H:%M:%S")
 
 def reproject_point(x, y, in_crs, out_crs = 'epsg:4326'):
     try:
@@ -141,7 +151,7 @@ def change_to_rational(number):
     return (f.numerator, f.denominator)
 
 
-def set_gps_location(file_name, lat, lng, altitude):
+def set_gps_location(file_name, lat, lng, altitude, photo_date):
     """Adds GPS position as EXIF metadata
     Keyword arguments:
     file_name -- image file
@@ -168,13 +178,18 @@ def set_gps_location(file_name, lat, lng, altitude):
         piexif.GPSIFD.GPSLongitude: exiv_lng,
     }
 
-    gps_exif = {"GPS": gps_ifd}
+    gps_exif = {
+        "GPS": gps_ifd
+    }
 
     # get original exif data first!
     exif_data = piexif.load(file_name)
 
     # update original exif data to include GPS tag
     exif_data.update(gps_exif)
+    exif_data["0th"][piexif.ImageIFD.DateTime] = photo_date
+    exif_data["Exif"][piexif.ExifIFD.DateTimeOriginal] = photo_date
+    exif_data["Exif"][piexif.ExifIFD.DateTimeDigitized] = photo_date
     exif_bytes = piexif.dump(exif_data)
 
     piexif.insert(exif_bytes, file_name)
