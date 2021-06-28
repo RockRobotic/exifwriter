@@ -12,7 +12,7 @@ Select the csv file created by PCPainter and the folder containing your camera i
 
 Windows 10 distribution included. However, this can be run with any computer which has python 3.7+ by running:
 
-`pip install Gooey piexif`
+`pip install Gooey piexif pyproj gps-time`
 
 `python exifwrite.py`
 
@@ -20,6 +20,6 @@ Windows 10 distribution included. However, this can be run with any computer whi
 
 conda create --name exifwriter python=3.8.3
 
-pip install Gooey piexif pyinstaller pyproj
+pip install Gooey piexif pyinstaller pyproj gps-time
 
 pyinstaller --noconsole --onefile --windowed exifwrite.py
