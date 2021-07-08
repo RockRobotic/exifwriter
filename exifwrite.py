@@ -96,15 +96,34 @@ def main():
         total_lines = len(list(trajectory_csv))
         i = 0
         traj.seek(0)
+        headers = []
+        week = 0
+        second = 1
+        epsg = 2
+        easting = 3
+        northing = 4
+        height = 5
+        photo_item = 9
+
         for line in trajectory_csv:
             if i > 0:
-                photoname = line[9]
+                photoname = line[photo_item]
                 photoname = photoname.replace('camera/', '')
                 if os.path.exists(args.base_camera_dir + os.sep + photoname):
                     photo = args.base_camera_dir + os.sep + photoname
-                    reproject = reproject_point(line[3], line[4], 'epsg:' + line[2])
-                    photo_date = get_photo_date(line[0], line[1])
-                    set_gps_location(photo, float(reproject[1]), float(reproject[0]), float(line[5]), photo_date)
+                    reproject = reproject_point(line[easting], line[northing], 'epsg:' + line[epsg])
+                    photo_date = get_photo_date(line[week], line[second])
+                    set_gps_location(photo, float(reproject[1]), float(reproject[0]), float(line[height]), photo_date)
+            else:
+                headers = line
+                if headers[0] == 'Easting':
+                    week = 9
+                    second = 10
+                    epsg = 11
+                    easting = 0
+                    northing = 1
+                    height = 2
+                    photo_item = 8
 
             i = i + 1
             print('progress: ' + str(i) + '/' + str(total_lines))
