@@ -202,16 +202,19 @@ def set_gps_location(file_name, lat, lng, altitude, photo_date):
     }
 
     # get original exif data first!
-    exif_data = piexif.load(file_name)
+    try:
+        exif_data = piexif.load(file_name)
 
-    # update original exif data to include GPS tag
-    exif_data.update(gps_exif)
-    exif_data["0th"][piexif.ImageIFD.DateTime] = photo_date
-    exif_data["Exif"][piexif.ExifIFD.DateTimeOriginal] = photo_date
-    exif_data["Exif"][piexif.ExifIFD.DateTimeDigitized] = photo_date
-    exif_bytes = piexif.dump(exif_data)
+        # update original exif data to include GPS tag
+        exif_data.update(gps_exif)
+        exif_data["0th"][piexif.ImageIFD.DateTime] = photo_date
+        exif_data["Exif"][piexif.ExifIFD.DateTimeOriginal] = photo_date
+        exif_data["Exif"][piexif.ExifIFD.DateTimeDigitized] = photo_date
+        exif_bytes = piexif.dump(exif_data)
 
-    piexif.insert(exif_bytes, file_name)
+        piexif.insert(exif_bytes, file_name)
+    except:
+        print("Could not open " + str(file_name))
 
 if __name__ == '__main__':
     main()

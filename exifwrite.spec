@@ -5,7 +5,7 @@ block_cipher = None
 
 
 a = Analysis(['exifwrite.py'],
-             pathex=['Y:\\rockrobotic\\exifwriter'],
+             pathex=['Z:\\rockrobotic\\exifwriter'],
              binaries=[],
              datas=[],
              hiddenimports=[],
